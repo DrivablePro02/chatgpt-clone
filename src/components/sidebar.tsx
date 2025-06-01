@@ -3,8 +3,9 @@
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ChatGPTLogo } from '@/components/chatgpt-logo'
+import { UserButton, useUser } from '@clerk/nextjs'
 import {
   PenSquare,
   MessageSquare,
@@ -30,6 +31,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onToggle, messages }: SidebarProps) {
+  const { user } = useUser();
+
   // Group messages into conversations (simplified - just using all messages as one conversation)
   const conversations = messages.length > 0 ? [{
     id: '1',
@@ -113,23 +116,23 @@ export function Sidebar({ isOpen, onToggle, messages }: SidebarProps) {
 
       {/* Bottom Section */}
       <div className="p-4">
-        <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-green-600 text-white text-sm">
-              <User className="h-4 w-4" />
-            </AvatarFallback>
-          </Avatar>
+        <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800">
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: "h-8 w-8",
+                userButtonPopoverCard: "bg-white",
+                userButtonPopoverActions: "bg-white"
+              }
+            }}
+            showName={false}
+          />
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-gray-200">User</p>
+            <p className="text-sm text-gray-200">
+              {user?.firstName || user?.emailAddresses[0]?.emailAddress || 'User'}
+            </p>
             <p className="text-xs text-gray-500">Free plan</p>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 w-7 p-0 text-gray-400 hover:text-white hover:bg-gray-700"
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
         </div>
       </div>
     </div>
